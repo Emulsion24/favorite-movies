@@ -68,7 +68,7 @@ exports.logout = (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     res.json({ user: { email: decoded.email ,
-      role: decoded.role} });
+      role: decoded.role,id:decoded.id} });
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
   }

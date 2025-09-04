@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Movies', {
@@ -11,7 +12,11 @@ module.exports = {
       duration: Sequelize.STRING,
       year: Sequelize.STRING,
       image: Sequelize.STRING,
-      approved: { type: Sequelize.BOOLEAN, defaultValue: false },
+      status: { 
+        type: Sequelize.STRING, 
+        allowNull: false, 
+        defaultValue: 'pending' // pending / approved / rejected
+      },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -22,6 +27,7 @@ module.exports = {
       updatedAt: { allowNull: false, type: Sequelize.DATE },
     });
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Movies');
   },

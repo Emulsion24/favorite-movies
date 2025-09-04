@@ -18,12 +18,15 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     type: DataTypes.STRING,
     director: DataTypes.STRING,
-    budget: DataTypes.STRING,
+    budget: DataTypes.INTEGER,
     location: DataTypes.STRING,
     duration: DataTypes.STRING,
     year: DataTypes.STRING,
     image: DataTypes.STRING,
-    approved: DataTypes.BOOLEAN,
+    status:{
+        type: DataTypes.STRING,
+        defaultValue: 'Pending', // 'Pending' or 'Aprooved' or 'Rejected'
+      },
     userId: DataTypes.INTEGER
   }, {
     sequelize,

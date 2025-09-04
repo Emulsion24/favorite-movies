@@ -32,6 +32,7 @@ exports.getUsers = async (req, res) => {
     const users = await User.findAll({ attributes: ['id', 'name', 'email', 'role'] });
     res.json(users);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
