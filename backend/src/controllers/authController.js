@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
-
+require('dotenv').config();
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -49,7 +49,7 @@ exports.login = async (req, res) => {
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
-
+  
     // Also return minimal info in body
     res.json({ message: 'Login successful', user: { id: user.id, email: user.email, role: user.role } });
   } catch (err) {
@@ -59,6 +59,19 @@ exports.login = async (req, res) => {
 exports.logout = (req, res) => {
   res.clearCookie('token');
   res.json({ message: 'Logged out successfully' });
+};
+ exports.CheckAuth=(req, res) => {
+  const token = req.cookies.token;
+
+  if (!token) return res.status(401).json({ message: "Not authenticated" }).console.log("jj");
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ user: { email: decoded.email ,
+      role: decoded.role} });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
 };
 
 
