@@ -1,0 +1,5 @@
+# Ensure all text files use automatic normalization
+* text=auto
+
+# Optional: force LF for gitignore specifically
+*.gitignore text eol=lf
