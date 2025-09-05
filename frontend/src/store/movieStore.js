@@ -1,56 +1,74 @@
+// src/store/movieStore.js
 import { create } from "zustand";
-import api from "../utils/api";
+import toast from "react-hot-toast";
+import api from "../utils/api"; // your axios/fetch wrapper
 
 const useMovieStore = create((set, get) => ({
   movies: [],
-  hasMore: true,
+  usermovies:[],
   loading: false,
   error: null,
-  page: 1,
 
-  // Fetch movies (approved + user’s own pending)
-  fetchMovies: async (reset = false) => {
-    const { page, movies } = get();
-    set({ loading: true, error: null });
+  // --- Core state management ---
+  setMovies: (movies) => set({ movies }),
+  addMovie: (movie) =>
+    set((state) => ({ movies: [...state.movies, movie] })),
+  updateMovie: (updatedMovie) =>
+    set((state) => ({
+      movies: state.movies.map((m) =>
+        m.id === updatedMovie.id ? updatedMovie : m
+      ),
+    })),
+  deleteMovie: (id) =>
+    set((state) => ({
+      movies: state.movies.filter((m) => m.id !== id),
+    })),
+  setLoading: (loading) => set({ loading }),
+  setError: (error) => set({ error }),
 
+  // --- API actions with error handling + toast ---
+  fetchApprovedMovies: async () => {
+    set({ loading: true });
     try {
-      const res = await api.get(`/movies?page=${reset ? 1 : page}&limit=10`);
-      set({
-        movies: reset ? res.data.movies : [...movies, ...res.data.movies],
-        hasMore: res.data.hasMore,
-        page: reset ? 2 : page + 1,
-        loading: false,
-      });
+      const res = await api.get("/movies");
+      
+      set({ movies: res.data.movies ||[], loading: false, error: null });
+      console.log(res.data.movies)
     } catch (err) {
-      set({ loading: false, error: "Failed to fetch movies" });
+      set({ error: err.message, loading: false });
+      toast.error("Failed to load approved movies");
     }
   },
 
-  // Add movie
-  addMovie: async (formData) => {
+  fetchUserMovies: async (userId) => {
+    set({ loading: true });
     try {
-      const res = await api.post("/movies/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      set((state) => ({
-        movies: [res.data.movie, ...state.movies],
-      }));
-      return res.data.movie;
+      const res = await api.get(`/movies/user`);
+      set({ usermovies: res.data.movies || [], loading: false, error: null });
     } catch (err) {
-      set({ error: "Failed to add movie" });
-      throw err;
+      set({ error: err.message, loading: false });
+      toast.error("Failed to load user movies");
     }
   },
 
-  // Delete movie
-  deleteMovie: async (id) => {
+  createMovie: async (movieData) => {
+    try {
+      const res = await api.post("/movies", movieData);
+      get().addMovie(res.data);
+      toast.success("Movie added successfully");
+    } catch (err) {
+      toast.error("Failed to add movie");
+    }
+  },
+
+ 
+  removeMovie: async (id) => {
     try {
       await api.delete(`/movies/${id}`);
-      set((state) => ({
-        movies: state.movies.filter((m) => m.id !== id),
-      }));
+      get().deleteMovie(id);
+      toast.success("Movie deleted");
     } catch (err) {
-      set({ error: "Delete failed" });
+      toast.error("Failed to delete movie");
     }
   },
 }));

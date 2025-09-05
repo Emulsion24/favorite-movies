@@ -11,7 +11,7 @@ exports.createMovie = async (req, res) => {
   try {
     const { title, type, director, budget, location, duration, year } = movieSchema.parse({ ...req.body });
     const userId = req.user.id; // comes from auth middleware
-
+    console.log(location);
 
     // If image uploaded with multer
     
@@ -29,6 +29,7 @@ exports.createMovie = async (req, res) => {
       image:image_url,
       userId: userId,
       approved: false,
+      deleted: false, 
     });
 
     res.status(201).json({
@@ -49,24 +50,58 @@ exports.createMovie = async (req, res) => {
  */
 exports.getMovie = async (req, res) => {
   try {
-    const { page = 1, limit = 10, type, search } = req.query;
+    const {
+      page = 1,
+      limit = 10,
+      title,
+      type,
+      year,
+      year_gte,
+      year_lte,
+      sort, // e.g., "title:asc"
+    } = req.query;
+
     const offset = (page - 1) * limit;
+    const where = {};
 
-    const where = {
-      [Op.or]: [
-        { status: "approved" },         // all approved movies
-        { userId: req.user.id },   // user’s own entries, even if pending
-      ],
-    };
+    // 🔹 Title search
+    if (title) {
+      where.title = { [Op.iLike]: `%${title}%` };
+    }
 
+    // 🔹 Type filter
     if (type) where.type = type;
-    if (search) where.title = { [Op.iLike]: `%${search}%` };
+
+    // 🔹 Year search
+    if (year) where.year = Number(year);
+
+    // 🔹 Year range
+    if (year_gte || year_lte) {
+      where.year = {};
+      if (year_gte) where.year[Op.gte] = Number(year_gte);
+      if (year_lte) where.year[Op.lte] = Number(year_lte);
+    }
+
+    
+      where[Op.or] = [
+        {deleted: false},
+        { status: "approved" }, // public
+        // user’s own uploads
+      ];
+    
+
+    // 🔹 Sorting
+    let order = [["createdAt", "DESC"]];
+    if (sort) {
+      const [field, dir] = sort.split(":");
+      order = [[field, dir?.toUpperCase() === "ASC" ? "ASC" : "DESC"]];
+    }
 
     const { rows, count } = await Movie.findAndCountAll({
       where,
       limit: parseInt(limit),
       offset: parseInt(offset),
-      order: [["createdAt", "DESC"]],
+      order,
     });
 
     res.json({
@@ -74,12 +109,10 @@ exports.getMovie = async (req, res) => {
       hasMore: count > offset + rows.length,
     });
   } catch (err) {
-   console.error(err); 
+    console.error("getMovies failed:", err);
     res.status(500).json({ error: err.message });
-    
   }
 };
-
 /**
  * Update movie
  * - Only owner can edit
@@ -87,9 +120,9 @@ exports.getMovie = async (req, res) => {
 exports.updateMovie = async (req, res) => {
   try {
     const movie = await Movie.findByPk(req.params.id);
-    if (!movie) return res.status(404).json({ error: "Not found" });
-console.log(req.user.role)
-if(req.user.role!=='admin'){
+    if (!movie| movie.delete) return res.status(404).json({ error: "Not found" });
+
+          if(req.user.role!=='admin'){
     if (movie.userId !== req.user.id) {
       return res.status(403).json({ error: "Forbidden" });
     }
@@ -125,13 +158,15 @@ if(req.user.role!=='admin'){
 exports.deleteMovie = async (req, res) => {
   try {
     const movie = await Movie.findByPk(req.params.id);
-    if (!movie) return res.status(404).json({ error: "Not found" });
-
+    if (!movie | movie.deleted) return res.status(404).json({ error: "Not found" });
+if (req.user.role!=="admin"){
     if (movie.userId !== req.user.id) {
       return res.status(403).json({ error: "Forbidden" });
     }
-
-    await movie.destroy();
+  }
+    movie.deleted = true;
+    movie.deletedAt = new Date();
+    await movie.save();
     res.json({ message: "Movie deleted successfully" });
   } catch (err) {
     console.error(err);
@@ -149,7 +184,7 @@ exports.updateMovieStatus = async (req, res) => {
     }
 
     const movie = await Movie.findByPk(movieId);
-    if (!movie) return res.status(404).json({ error: "Movie not found" });
+    if (!movie |movie.deleted) return res.status(404).json({ error: "Movie not found" });
 
     movie.status = status;
     await movie.save();
@@ -163,14 +198,45 @@ exports.updateMovieStatus = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-exports.getMovies = async (req, res) => {
+exports.getUserMovie= async (req, res) => {
   try {
     const { page = 1, limit = 10, type, search } = req.query;
     const offset = (page - 1) * limit;
 
     // Fetch all movies that are NOT rejected
     const where = {
+       userId: req.user.id,
+       deleted: false, // not rejected
+    };
+
+    if (type) where.type = type;
+    if (search) where.title = { [Op.iLike]: `%${search}%` };
+
+    const { rows, count } = await Movie.findAndCountAll({
+      where,
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.json({
+      movies: rows,
+      hasMore: count > offset + rows.length,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getallMovies = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, type, search } = req.query;
+    const offset = (page - 1) * limit;
+
+    // Fetch all movies that are NOT rejected
+    const where = {
+      deleted: false,
       status: { [Op.ne]: "rejected" }, // not rejected
     };
 

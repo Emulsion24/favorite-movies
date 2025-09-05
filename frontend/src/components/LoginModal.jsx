@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import useAuthStore from "../store/authStore";
 
 export default function LoginModal({ onClose, defaultMode = "login" }) {
@@ -15,7 +16,6 @@ export default function LoginModal({ onClose, defaultMode = "login" }) {
 
   const navigate = useNavigate();
 
-  // Update mode if defaultMode changes (when user clicks Login vs Signup)
   useEffect(() => {
     setIsLogin(defaultMode === "login");
   }, [defaultMode]);
@@ -24,17 +24,26 @@ export default function LoginModal({ onClose, defaultMode = "login" }) {
     setLoading(true);
     setError("");
     try {
-      const user = await login(email, password);
-
-      if (user.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/dashboard");
+      if (!email || !password) {
+        throw new Error("Email and password are required");
       }
 
-      onClose(); // close modal
+      const user = await login(email, password);
+
+      if (!user) {
+        throw new Error("Login failed, no user returned");
+      }
+
+      if (user.role === "admin") navigate("/admin");
+      else navigate("/dashboard");
+
+      toast.success("Login successful");
+      onClose();
     } catch (err) {
-      setError("Invalid credentials");
+      console.error("Login error:", err);
+      const message = err.response?.data?.error || err.message || "Invalid credentials";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -44,11 +53,19 @@ export default function LoginModal({ onClose, defaultMode = "login" }) {
     setLoading(true);
     setError("");
     try {
+      if (!name || !email || !password) {
+        throw new Error("All fields are required");
+      }
+
       await signup(name, email, password);
-      navigate("/dashboard"); // default redirect after signup
+      navigate("/dashboard");
+      toast.success("Signup successful");
       onClose();
     } catch (err) {
-      setError(err.response?.data?.error || "Signup failed");
+      console.error("Signup error:", err);
+      const message = err.response?.data?.error || err.message || "Signup failed";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -56,26 +73,38 @@ export default function LoginModal({ onClose, defaultMode = "login" }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-white text-black p-8 rounded-lg w-96 relative">
-        <h2 className="text-2xl font-bold mb-4">
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-8 rounded-3xl w-96 shadow-2xl relative">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+        >
+          ✕
+        </button>
+
+        {/* Title */}
+        <h2 className="text-3xl font-bold mb-4 text-center">
           {isLogin ? "Login" : "Sign Up"}
         </h2>
 
-        {error && <p className="text-red-600 mb-4">{error}</p>}
+        {/* Error */}
+        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
 
+        {/* Form */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
             isLogin ? handleLogin() : handleSignup();
           }}
+          className="space-y-4"
         >
           {!isLogin && (
             <input
               type="text"
-              placeholder="Name"
+              placeholder="Full Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border mb-4 rounded"
+              className="w-full px-4 py-2 rounded-xl bg-gray-700 border border-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           )}
@@ -85,7 +114,7 @@ export default function LoginModal({ onClose, defaultMode = "login" }) {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border mb-4 rounded"
+            className="w-full px-4 py-2 rounded-xl bg-gray-700 border border-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             autoComplete="email"
           />
@@ -95,14 +124,14 @@ export default function LoginModal({ onClose, defaultMode = "login" }) {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border mb-4 rounded"
+            className="w-full px-4 py-2 rounded-xl bg-gray-700 border border-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             autoComplete="current-password"
           />
 
           <button
             type="submit"
-            className={`w-full px-4 py-2 rounded text-white ${
+            className={`w-full py-3 rounded-xl font-semibold transition ${
               isLogin
                 ? "bg-blue-600 hover:bg-blue-700"
                 : "bg-green-600 hover:bg-green-700"
@@ -113,14 +142,8 @@ export default function LoginModal({ onClose, defaultMode = "login" }) {
           </button>
         </form>
 
-        <button
-          onClick={onClose}
-          className="mt-2 w-full px-4 py-2 border rounded hover:bg-gray-200"
-        >
-          Cancel
-        </button>
-
-        <p className="mt-4 text-center text-sm">
+        {/* Switch Mode */}
+        <p className="mt-4 text-center text-gray-300 text-sm">
           {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
           <span
             onClick={() => {
@@ -130,7 +153,7 @@ export default function LoginModal({ onClose, defaultMode = "login" }) {
               setEmail("");
               setPassword("");
             }}
-            className="text-blue-600 cursor-pointer hover:underline"
+            className="text-blue-400 cursor-pointer hover:underline"
           >
             {isLogin ? "Sign Up" : "Login"}
           </span>

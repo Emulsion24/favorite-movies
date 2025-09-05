@@ -7,6 +7,7 @@ const movieSchema = z.object({
   type: z.enum(["Movie", "TV Show"]), // or your two options
   year: z.string().min(1,"Year is Required"),
   budget: z.string().optional(),
+  location:z.string().optional(),
   // Don't validate file here, Multer handles it
 });
 

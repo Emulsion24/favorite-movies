@@ -27,8 +27,17 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: 'Pending', // 'Pending' or 'Aprooved' or 'Rejected'
       },
+      deleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     userId: DataTypes.INTEGER
-  }, {
+  },
+   {
     sequelize,
     modelName: 'Movie',
   });

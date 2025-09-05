@@ -1,6 +1,6 @@
 import { useState } from "react";
 import api from "../utils/api";
-import EditEntryModal from "./EditEntryModal"; // Create this component
+import EditEntryModal from "./EditEntryModal";
 
 export default function EntryRow({ entry, canEdit, refreshEntries }) {
   const [showEdit, setShowEdit] = useState(false);
@@ -9,14 +9,10 @@ export default function EntryRow({ entry, canEdit, refreshEntries }) {
     if (!window.confirm("Delete this entry?")) return;
     try {
       await api.delete(`/movies/${entry.id}`);
-      refreshEntries(); // Call parent to refresh table
+      refreshEntries();
     } catch (err) {
       console.error("Delete failed:", err);
     }
-  };
-
-  const handleEdit = () => {
-    setShowEdit(true);
   };
 
   return (
@@ -47,10 +43,16 @@ export default function EntryRow({ entry, canEdit, refreshEntries }) {
         <td className="p-2">
           {canEdit && (
             <>
-              <button onClick={handleEdit} className="text-blue-600 mr-2 cursor-pointer">
+              <button
+                onClick={() => setShowEdit(true)}
+                className="text-blue-600 mr-2 cursor-pointer"
+              >
                 Edit
               </button>
-              <button onClick={handleDelete} className="text-red-600  cursor-pointer">
+              <button
+                onClick={handleDelete}
+                className="text-red-600 cursor-pointer"
+              >
                 Delete
               </button>
             </>
@@ -58,7 +60,6 @@ export default function EntryRow({ entry, canEdit, refreshEntries }) {
         </td>
       </tr>
 
-      {/* Edit Modal */}
       {showEdit && (
         <EditEntryModal
           entry={entry}

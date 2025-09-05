@@ -6,6 +6,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useAuthStore from "./store/authStore";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -20,6 +21,7 @@ function App() {
 
   return (
     <Router>
+       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         
