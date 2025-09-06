@@ -3,13 +3,20 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
-    "db:migrate": "sequelize db:migrate",
-    "db:seed": "sequelize db:seed:all",
-    "test": "jest --coverage"
-  },
+ "scripts": {
+  "dev": "nodemon src/server.js",
+  "start": "node src/server.js",
+
+  
+  "db:migrate": "npx sequelize-cli db:migrate",
+  "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
+  "db:seed": "npx sequelize-cli db:seed:all",
+  "db:seed:undo": "npx sequelize-cli db:seed:undo:all",
+
+  
+  "build": "npm install && npm run db:migrate && npm run db:seed"
+},
+
   "keywords": [],
   "author": "",
   "license": "ISC",
