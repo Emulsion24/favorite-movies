@@ -10,7 +10,7 @@
   "db:migrate": "npx sequelize-cli db:migrate --config src/config/config.json",
   "db:migrate:undo": "npx sequelize-cli db:migrate:undo --config src/config/config.json",
   "db:seed": "npx sequelize-cli db:seed:all --config src/config/config.json",
-  "db:seed:undo": "npx sequelize-cli db:seed:undo:all --config src/config/config.json"
+  "db:seed:undo": "npx sequelize-cli db:seed:undo:all --config src/config/config.json",
     "build": "npm install && npm run db:migrate && npm run db:seed"
 },
 
