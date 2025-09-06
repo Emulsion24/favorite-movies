@@ -171,8 +171,7 @@ Use these to log in:
   * **Email**: `ankush@email.com`
   * **Password**: `123456`
 
-*
-**Admin**:
+* **Admin**:
   * **Email**: `kaiti@mail.com`
   * **Password**: `123456`
 
