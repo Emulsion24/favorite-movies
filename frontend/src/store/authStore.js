@@ -1,11 +1,10 @@
 // src/store/authStore.js
 import { create } from "zustand";
 import axios from "axios";
-
+const API_URL="http://localhost:5000/api/v1/auth"
 // Axios default setup
 axios.defaults.withCredentials = true;
 
-const API_URL = "http://localhost:5000/api/v1/auth";
 
 const useAuthStore = create((set) => ({
   user: null,

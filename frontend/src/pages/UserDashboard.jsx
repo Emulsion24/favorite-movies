@@ -40,6 +40,7 @@ export default function UserDashboard() {
     if (!user) {
       navigate("/");
     } else {
+      
       fetchApprovedMovies();
       fetchUserMovies(user.id);
     }
@@ -242,6 +243,7 @@ export default function UserDashboard() {
                       "Poster",
                       "Title",
                       "Type",
+                      "Duration",
                       "Director",
                       "Year",
                       "Location",
@@ -276,6 +278,9 @@ export default function UserDashboard() {
                       </td>
                       <td className="px-4 py-2 border border-gray-300">
                         {movie.type}
+                      </td>
+                      <td className="px-4 py-2 border border-gray-300">
+                        {movie.duration}
                       </td>
                       <td className="px-4 py-2 border border-gray-300">
                         {movie.director}
@@ -317,8 +322,7 @@ export default function UserDashboard() {
               <tbody>
                 {[
                   ["Name", user.name],
-                  ["Email", user.email],
-                  ["Joined", new Date(user.createdAt).toLocaleDateString()],
+                  ["Email", user.email]
                 ].map(([field, value]) => (
                   <tr
                     key={field}
@@ -366,8 +370,10 @@ export default function UserDashboard() {
                         "Poster",
                         "Title",
                         "Type",
+                        "Duration",
                         "Director",
                         "Year",
+                        "Budget",
                         "Location",
                         "Actions",
                       ].map((h) => (
@@ -401,11 +407,17 @@ export default function UserDashboard() {
                         <td className="px-4 py-2 border border-gray-300">
                           {movie.type}
                         </td>
+                          <td className="px-4 py-2 border border-gray-300">
+                          {movie.duration}
+                        </td>
                         <td className="px-4 py-2 border border-gray-300">
                           {movie.director}
                         </td>
                         <td className="px-4 py-2 border border-gray-300">
                           {movie.year}
+                        </td>
+                         <td className="px-4 py-2 border border-gray-300">
+                          {movie.budget || "-"}
                         </td>
                         <td className="px-4 py-2 border border-gray-300">
                           {movie.location || "-"}

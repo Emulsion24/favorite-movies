@@ -2,6 +2,7 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import api from "../utils/api"; // your axios/fetch wrapper
+axios.defaults.withCredentials = true;
 
 const useMovieStore = create((set, get) => ({
   movies: [],
@@ -30,10 +31,10 @@ const useMovieStore = create((set, get) => ({
   fetchApprovedMovies: async () => {
     set({ loading: true });
     try {
-      const res = await api.get("/movies");
+      const res = await api.get("/movies",);
       
       set({ movies: res.data.movies ||[], loading: false, error: null });
-      console.log(res.data.movies)
+      
     } catch (err) {
       set({ error: err.message, loading: false });
       toast.error("Failed to load approved movies");
@@ -43,7 +44,7 @@ const useMovieStore = create((set, get) => ({
   fetchUserMovies: async (userId) => {
     set({ loading: true });
     try {
-      const res = await api.get(`/movies/user`);
+      const res = await api.get(`/movies/user`,);
       set({ usermovies: res.data.movies || [], loading: false, error: null });
     } catch (err) {
       set({ error: err.message, loading: false });
@@ -53,7 +54,7 @@ const useMovieStore = create((set, get) => ({
 
   createMovie: async (movieData) => {
     try {
-      const res = await api.post("/movies", movieData);
+      const res = await api.post("/movies", movieData,);
       get().addMovie(res.data);
       toast.success("Movie added successfully");
     } catch (err) {
@@ -64,7 +65,7 @@ const useMovieStore = create((set, get) => ({
  
   removeMovie: async (id) => {
     try {
-      await api.delete(`/movies/${id}`);
+      await api.delete(`/movies/${id}`,);
       get().deleteMovie(id);
       toast.success("Movie deleted");
     } catch (err) {

@@ -83,7 +83,7 @@ exports.getMovie = async (req, res) => {
     }
 
     
-      where[Op.or] = [
+      where[Op.and] = [
         {deleted: false},
         { status: "approved" }, // public
         // user’s own uploads

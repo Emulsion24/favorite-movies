@@ -8,6 +8,7 @@ const movieSchema = z.object({
   year: z.string().min(1,"Year is Required"),
   budget: z.string().optional(),
   location:z.string().optional(),
+  duration:z.string().optional(),
   // Don't validate file here, Multer handles it
 });
 

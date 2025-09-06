@@ -83,6 +83,7 @@ export default function AdminDashboard() {
   const updateMovieStatus = async (id, status) => {
     try {
       await api.patch(`/movies/${id}/status`, { status });
+      loadMovies();
       setMovies((prev) =>
         prev.map((movie) => (movie.id === id ? { ...movie, status } : movie))
       );
@@ -152,7 +153,7 @@ export default function AdminDashboard() {
           <option value="">All Status</option>
           <option value="approved">Approved</option>
           <option value="pending">Pending</option>
-          <option value="rejected">Rejected</option>
+         
         </select>
         <input
           type="number"
@@ -191,10 +192,13 @@ export default function AdminDashboard() {
                 <th className="p-2 border border-gray-300">Poster</th>
                 <th className="p-2 border border-gray-300">Title</th>
                 <th className="p-2 border border-gray-300">Type</th>
+                 <th className="p-2 border border-gray-300">Duration</th>
                 <th className="p-2 border border-gray-300">Director</th>
                 <th className="p-2 border border-gray-300">Year</th>
                 <th className="p-2 border border-gray-300">Budget</th>
-                <th className="p-2 border border-gray-300">Status</th>
+               
+                 <th className="p-2 border border-gray-300">Location</th>
+                  <th className="p-2 border border-gray-300">Status</th>
                 <th className="p-2 border border-gray-300">Actions</th>
               </tr>
             </thead>
@@ -212,10 +216,14 @@ export default function AdminDashboard() {
                   </td>
                   <td className="p-2 border border-gray-300">{movie.title}</td>
                   <td className="p-2 border border-gray-300">{movie.type}</td>
+                    <td className="p-2 border border-gray-300">{movie.duration}</td>
                   <td className="p-2 border border-gray-300">{movie.director}</td>
+                  
                   <td className="p-2 border border-gray-300">{movie.year}</td>
                   <td className="p-2 border border-gray-300">{movie.budget || "-"}</td>
-                  <td className="p-2 border border-gray-300 capitalize">{movie.status}</td>
+                
+                   <td className="p-2 border border-gray-300">{movie.location}</td>
+                     <td className="p-2 border border-gray-300 capitalize">{movie.status}</td>
                   <td className="p-2 border border-gray-300 flex gap-2 flex-wrap">
                     <button
                       onClick={() => updateMovieStatus(movie.id, "approved")}

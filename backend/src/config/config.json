@@ -14,10 +14,16 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": "Kaiti@123",
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "your_supabase_user",
+    "password": "your_supabase_password",
+    "database": "postgres",
+    "host": "db.xxxxx.supabase.co",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   }
 }

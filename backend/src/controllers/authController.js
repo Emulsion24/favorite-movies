@@ -37,7 +37,7 @@ exports.login = async (req, res) => {
 
     // Generate token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, role: user.role,name:user.name },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
@@ -51,7 +51,7 @@ exports.login = async (req, res) => {
     });
   
     // Also return minimal info in body
-    res.json({ message: 'Login successful', user: { id: user.id, email: user.email, role: user.role } });
+    res.json({ message: 'Login successful', user: { id: user.id, email: user.email, role: user.role,name:user.name } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -63,12 +63,13 @@ exports.logout = (req, res) => {
  exports.CheckAuth=(req, res) => {
   const token = req.cookies.token;
 
-  if (!token) return res.status(401).json({ message: "Not authenticated" }).console.log("jj");
+  if (!token) return res.status(401).json({ message: "Not authenticated" });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     res.json({ user: { email: decoded.email ,
-      role: decoded.role,id:decoded.id} });
+      role: decoded.role,id:decoded.id,name:decoded.name} });
+      console.log(decoded)
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
   }
