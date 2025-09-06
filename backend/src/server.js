@@ -74,7 +74,7 @@ app.use('/api/admin', adminRoutes);
 // -----------------
 // Serve React frontend
 // -----------------
-const buildPath = path.join(__dirname, '../frontend/dist');
+const buildPath = path.join(__dirname, '../../frontend/dist');
 app.use(express.static(buildPath));
 
 // Fallback route: any non-API request goes to React
