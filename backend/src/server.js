@@ -74,15 +74,12 @@ app.use('/api/v1', indexRoutes);
 app.use('/api/movies', movieRoutes);
 app.use('/api/admin', adminRoutes);
 
-// -----------------
-// Serve React frontend
-// -----------------
 
 
-// Fallback route: any non-API request goes to React
-app.all(/^(?!\/api).*/, (req, res) => {
-  res.sendFile(path.join(buildPath, 'index.html'));
-});
+
+
+
+
 
 // -----------------
 // Health check
