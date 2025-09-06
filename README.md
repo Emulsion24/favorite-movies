@@ -166,10 +166,13 @@ npm test
 ## 🔑 Demo Credentials
 
 Use these to log in:
-**User**
+
+* **User**:
   * **Email**: `ankush@email.com`
   * **Password**: `123456`
-**Admin**
+
+*
+**Admin**:
   * **Email**: `kaiti@mail.com`
   * **Password**: `123456`
 
