@@ -58,8 +58,9 @@ export default function LoginModal({ onClose, defaultMode = "login" }) {
       }
 
       await signup(name, email, password);
-      navigate("/dashboard");
+      
       toast.success("Signup successful");
+      navigate("/dashboard");
       onClose();
     } catch (err) {
       console.error("Signup error:", err);
