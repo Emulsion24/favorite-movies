@@ -11,7 +11,7 @@
     "db:seed": "npx sequelize-cli db:seed:all --config src/config/config.js --seeders-path src/seeders",
     "db:seed:undo": "npx sequelize-cli db:seed:undo:all --config src/config/config.js --seeders-path src/seeders",
 
-  "build": "npm install && npm run db:migrate && npm run db:seed"
+  "build": "npm install "
 },
 
 
