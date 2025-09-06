@@ -34,7 +34,7 @@ app.use(
 // CORS
 // -----------------
 app.use(cors({
-  origin: "https://favorite-movies-frontend.onrender.com", // Change this in production to your domain
+  origin: "https://favorite-movies-kia6.onrender.com", // Change this in production to your domain
   credentials: true
 }));
 
@@ -47,14 +47,11 @@ app.use(cookieParser());
 // -----------------
 // Logging
 // -----------------
-// Log to console
-app.use(morgan('dev'));
-
-// Optional: log to file
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, 'access.log'),
   { flags: 'a' }
 );
+app.use(morgan('dev'));
 app.use(morgan('combined', { stream: accessLogStream }));
 
 // -----------------
@@ -74,12 +71,16 @@ app.use('/api/v1', indexRoutes);
 app.use('/api/movies', movieRoutes);
 app.use('/api/admin', adminRoutes);
 
+// -----------------
+// Serve React frontend
+// -----------------
+const buildPath = path.join(__dirname, '../frontend/dist');
+app.use(express.static(buildPath));
 
-
-
-
-
-
+// Fallback route: any non-API request goes to React
+app.all(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(buildPath, 'index.html'));
+});
 
 // -----------------
 // Health check
@@ -91,8 +92,6 @@ app.get('/', (req, res) => {
 // -----------------
 // Start server
 // -----------------
- // adjust path
-
 (async () => {
   try {
     await db.sequelize.authenticate();
