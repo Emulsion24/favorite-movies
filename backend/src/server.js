@@ -34,7 +34,7 @@ app.use(
 // CORS
 // -----------------
 app.use(cors({
-  origin: "http://localhost:5173", // Change this in production to your domain
+  origin: "https://favorite-movies-kia6.onrender.com", // Change this in production to your domain
   credentials: true
 }));
 
@@ -77,8 +77,7 @@ app.use('/api/admin', adminRoutes);
 // -----------------
 // Serve React frontend
 // -----------------
-const buildPath = path.join(__dirname, '..', 'dist'); // Points to backend/build
-app.use(express.static(buildPath));
+
 
 // Fallback route: any non-API request goes to React
 app.all(/^(?!\/api).*/, (req, res) => {
