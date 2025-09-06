@@ -127,11 +127,13 @@ npx sequelize-cli db:seed:all     # optional for demo data
 
   * `POST /api/v1/auth/register` → Register user
   * `POST /api/v1/auth/login` → Login user
-  * `GET /api/movies` → Fetch movies
-  * `POST /api/movies` → Add new movie
-  * `POST /api/movies/all` → Fetch All Movies
-  * `POST /api/movies` → Add new movie
-  * `POST /api/movies` → Add new movie
+  * `GET /api/movies` → Fetch Approvedmovies
+  * `POST /api/movies/create` → Add new movie
+  * `GET /api/movies/all` → Fetch All Movies
+  * `DELETE /api/movies/:id` → Soft Delete Movie
+  * `PATCH /api/movies/:id/status` → Approve/Reject Movies
+  * `PUT /api/movies/:id` → Edit Movies
+  * `GET /api/movies/user` → Get Login User Movies
 
 -----
 
