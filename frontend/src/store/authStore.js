@@ -1,7 +1,7 @@
 // src/store/authStore.js
 import { create } from "zustand";
 import axios from "axios";
-const API_URL="http://localhost:5000/api/v1/auth"
+const API_URL="https://favorite-movies-kia6.onrender.com/v1/auth"
 // Axios default setup
 axios.defaults.withCredentials = true;
 
