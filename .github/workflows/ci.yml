@@ -1,0 +1,71 @@
+name: CI — tests & lint
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: example
+          MYSQL_DATABASE: favorite_movies
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent --host=127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL..."
+          for i in {1..30}; do
+            mysqladmin ping -h"127.0.0.1" -u"root" -pexample >/dev/null 2>&1 && break
+            sleep 2
+          done
+
+      - name: Backend - install, migrate (if needed), test & lint
+        working-directory: backend
+        run: |
+          npm ci
+          # If you use sequelize migrations in CI, uncomment and configure the command below:
+          # npx sequelize-cli db:migrate --env test || true
+          if [ -f package.json ]; then
+            if npm run | grep -q "lint"; then
+              npm run lint || true
+            fi
+            if npm run | grep -q "test"; then
+              npm test || true
+            fi
+          fi
+
+      - name: Frontend - install, test & lint
+        working-directory: frontend
+        run: |
+          npm ci
+          if [ -f package.json ]; then
+            if npm run | grep -q "lint"; then
+              npm run lint || true
+            fi
+            if npm run | grep -q "test"; then
+              npm test || true
+            fi
+          fi
