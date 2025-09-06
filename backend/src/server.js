@@ -34,7 +34,7 @@ app.use(
 // CORS
 // -----------------
 app.use(cors({
-  origin: "https://favorite-movies-kia6.onrender.com", // Change this in production to your domain
+  origin: "https://favorite-movies-frontend.onrender.com", // Change this in production to your domain
   credentials: true
 }));
 
