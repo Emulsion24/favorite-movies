@@ -1,4 +1,5 @@
 // src/server.js
+const db  = require('./models/index')
 
 const express = require('express');
 const cors = require('cors');
@@ -94,6 +95,17 @@ app.get('/', (req, res) => {
 // -----------------
 // Start server
 // -----------------
+ // adjust path
+
+(async () => {
+  try {
+    await db.sequelize.authenticate();
+    console.log("✅ Database connected successfully!");
+  } catch (error) {
+    console.error("❌ Database connection failed:", error);
+  }
+})();
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
